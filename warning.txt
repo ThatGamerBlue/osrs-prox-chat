@@ -1,0 +1,1 @@
+This plugin submits your IP Address, world and player location to a server not controlled or verified by the RuneLite developers.

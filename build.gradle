@@ -1,32 +1,151 @@
 plugins {
-	id 'java'
+    id "java"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+task buildServer(description: "Builds the server software") {
+    dependsOn(shadowJar)
+
+    // gradle hack
+    if (gradle.startParameter.taskNames.contains("buildServer") ||
+            gradle.startParameter.taskNames.contains("runServer")) {
+        shadowJar {
+            archiveClassifier.set("server")
+
+            manifest {
+                attributes "Main-Class": "com.thatgamerblue.osrs.proxchat.server.ProxChatServer"
+            }
+        }
+    }
+}
+
+task runServer(description: "Runs the server software", type: JavaExec) {
+    dependsOn(buildServer)
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = "com.thatgamerblue.osrs.proxchat.server.ProxChatServer"
+}
+
+task buildTestClient(description: "Builds the test client") {
+    dependsOn(shadowJar)
+
+    // gradle hack
+    if (gradle.startParameter.taskNames.contains("buildTestClient") ||
+            gradle.startParameter.taskNames.contains("runTestClient")) {
+        shadowJar {
+            archiveClassifier.set("testclient")
+
+            manifest {
+                attributes "Main-Class": "com.thatgamerblue.osrs.proxchat.client.test.TestClient"
+            }
+        }
+    }
+}
+
+task runTestClient(description: "Runs the test client", type: JavaExec) {
+    dependsOn(buildTestClient)
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = "com.thatgamerblue.osrs.proxchat.client.test.TestClient"
+}
+
+task buildTestServer(description: "Builds the test server") {
+    dependsOn(shadowJar)
+
+    // gradle hack
+    if (gradle.startParameter.taskNames.contains("buildTestServer") ||
+            gradle.startParameter.taskNames.contains("runTestServer")) {
+        shadowJar {
+            archiveClassifier.set("testserver")
+
+            manifest {
+                attributes "Main-Class": "com.thatgamerblue.osrs.proxchat.server.test.TestServer"
+            }
+        }
+    }
+}
+
+task runTestServer(description: "Runs the test server", type: JavaExec) {
+    dependsOn(buildTestServer)
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = "com.thatgamerblue.osrs.proxchat.server.test.TestServer"
 }
 
 repositories {
-	mavenLocal()
-	maven {
-		url = 'https://repo.runelite.net'
-	}
-	mavenCentral()
+    mavenCentral()
+    maven {
+        url = "https://jcenter.bintray.com/"
+    }
+    maven {
+        url = "https://thatgamerblue.com/maven"
+        content {
+            // only grab these two artifacts from the repository
+            includeModule("com.esotericsoftware.kryo", "kryo")
+            includeModule("com.esotericsoftware.reflectasm", "reflectasm")
+        }
+    }
+    maven {
+        url = "https://repo.runelite.net"
+        content {
+            // rrn throws peer not authenticated errors at random, minimize them like this
+            excludeGroupByRegex("com\\.esotericsoftware.*")
+            excludeGroup("kryonet")
+        }
+    }
+    mavenLocal()
 }
 
-def runeLiteVersion = '1.6.35'
+def runeLiteVersion = "1.7.2.2"
+def kryonetVersion = "2.21"
+def kryoVersion = "2.24.0-blue"
+def reflectAsmVersion = "1.09-blue"
+def opusJavaVersion = "1.0.4"
 
 dependencies {
-	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
+    // shade runelite in so i can use the dependencies such as gson in the server side
+    if (gradle.startParameter.taskNames.contains("buildServer") ||
+            gradle.startParameter.taskNames.contains("runServer") ||
+            gradle.startParameter.taskNames.contains("buildTestClient") ||
+            gradle.startParameter.taskNames.contains("runTestClient") ||
+            gradle.startParameter.taskNames.contains("buildTestServer") ||
+            gradle.startParameter.taskNames.contains("runTestServer")) {
+        implementation group: "net.runelite", name: "client", version: runeLiteVersion
+    } else {
+        compileOnly group: "net.runelite", name: "client", version: runeLiteVersion
+    }
 
-	compileOnly 'org.projectlombok:lombok:1.18.4'
-	annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    implementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
+        transitive = false
+    }
+    implementation group: "com.esotericsoftware.reflectasm", name: "reflectasm", version: reflectAsmVersion, classifier: "shaded"
+    implementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion)
 
-	testImplementation 'junit:junit:4.12'
-	testImplementation group: 'net.runelite', name:'client', version: runeLiteVersion
-	testImplementation group: 'net.runelite', name:'jshell', version: runeLiteVersion
+    implementation group: "club.minnced", name: "opus-java", version: opusJavaVersion
+
+    compileOnly "org.projectlombok:lombok:1.18.4"
+    annotationProcessor "org.projectlombok:lombok:1.18.4"
+
+    testImplementation "junit:junit:4.12"
+
+    testImplementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
+        transitive = false
+    }
+    testImplementation group: "com.esotericsoftware.reflectasm", name: "reflectasm", version: reflectAsmVersion, classifier: "shaded"
+    testImplementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion)
+
+    testImplementation group: "club.minnced", name: "opus-java", version: opusJavaVersion
+    testImplementation group: "net.runelite", name: "client", version: runeLiteVersion
+    testImplementation group: "net.runelite", name: "jshell", version: runeLiteVersion
 }
 
-group = 'com.example'
-version = '1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
+group = "com.example"
+version = "1.0-SNAPSHOT"
+sourceCompatibility = "1.8"
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+    options.encoding = "UTF-8"
 }
