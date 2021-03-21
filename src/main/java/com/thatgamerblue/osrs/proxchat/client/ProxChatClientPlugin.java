@@ -105,22 +105,20 @@ public class ProxChatClientPlugin extends Plugin
 		executor = Executors.newSingleThreadScheduledExecutor();
 		network = new ClientNetworkHandler(this, client, config::address, config::port, config::password);
 		network.initKryonet();
-		executor.submit(() ->
+
+		try
 		{
-			try
-			{
-				OpusLibrary.loadFromJar();
-			}
-			catch (IOException e)
-			{
-				log.error("Failed to load Opus library.", e);
-			}
+			OpusLibrary.loadFromJar();
+		}
+		catch (IOException e)
+		{
+			log.error("Failed to load Opus library.", e);
+		}
 
-			network.connect();
+		micThread = new MicThread(network, config::micVolume, config::activationThreshold, config::audioMode, client::getGameState);
+		micThread.start();
 
-			micThread = new MicThread(network, config::micVolume, config::activationThreshold, config::audioMode, client::getGameState);
-			micThread.start();
-		});
+		executor.submit(() -> network.connect());
 
 		keyManager.registerKeyListener(keyHandler);
 	}

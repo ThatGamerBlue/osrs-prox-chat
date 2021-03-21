@@ -75,6 +75,14 @@ task runTestServer(description: "Runs the test server", type: JavaExec) {
     main = "com.thatgamerblue.osrs.proxchat.server.test.TestServer"
 }
 
+task runPlugin(description: "Runs the runelite client with the plugin", type: JavaExec) {
+    dependsOn(shadowJar)
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    main = "com.thatgamerblue.osrs.proxchat.client.test.RunPlugin"
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -112,7 +120,8 @@ dependencies {
             gradle.startParameter.taskNames.contains("buildTestClient") ||
             gradle.startParameter.taskNames.contains("runTestClient") ||
             gradle.startParameter.taskNames.contains("buildTestServer") ||
-            gradle.startParameter.taskNames.contains("runTestServer")) {
+            gradle.startParameter.taskNames.contains("runTestServer") ||
+            gradle.startParameter.taskNames.contains("runPlugin")) {
         implementation group: "net.runelite", name: "client", version: runeLiteVersion
     } else {
         compileOnly group: "net.runelite", name: "client", version: runeLiteVersion
