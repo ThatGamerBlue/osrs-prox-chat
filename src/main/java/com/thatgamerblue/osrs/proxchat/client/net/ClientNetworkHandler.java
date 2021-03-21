@@ -325,11 +325,6 @@ public class ClientNetworkHandler extends NetworkHandler
 			return;
 		}
 
-		if (gameState != 30)
-		{
-			return;
-		}
-
 		sendTCP(new C2SUpdatePacket(x, y, plane, world, gameState));
 	}
 
