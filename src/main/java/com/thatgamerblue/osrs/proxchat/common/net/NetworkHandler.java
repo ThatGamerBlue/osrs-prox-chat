@@ -10,6 +10,7 @@ import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SAuth;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SMicPacket;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SUpdatePacket;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CAuthReq;
+import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CKillDecoder;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CMicPacket;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CUpdateReq;
 import com.thatgamerblue.osrs.proxchat.common.serializers.ByteArySerializer;
@@ -84,7 +85,7 @@ public abstract class NetworkHandler
 
 		// register S2C packets
 		kryo.register(S2CAuthReq.class);
-		kryo.register(S2CAuthReq.class);
+		kryo.register(S2CKillDecoder.class);
 		kryo.register(S2CMicPacket.class);
 		kryo.register(S2CUpdateReq.class);
 

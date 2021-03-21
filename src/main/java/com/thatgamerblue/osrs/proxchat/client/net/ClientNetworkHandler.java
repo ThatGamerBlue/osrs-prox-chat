@@ -167,7 +167,7 @@ public class ClientNetworkHandler extends NetworkHandler
 		}
 		catch (IOException ex)
 		{
-			log.error("Failed to connect to the server, retrying in " + backoffTimer + " seconds.");
+			log.error("Failed to connect to the server, retrying in " + backoffTimer + " seconds.", ex);
 			connectionFuture = plugin.getExecutor().schedule(this::doConnect, backoffTimer, TimeUnit.SECONDS);
 			backoffTimer *= 2;
 			if (backoffTimer > BACKOFF_TIMER_MAX)
@@ -351,7 +351,10 @@ public class ClientNetworkHandler extends NetworkHandler
 	 */
 	public void cancelConnecting()
 	{
-		connectionFuture.cancel(false);
+		if (connectionFuture != null)
+		{
+			connectionFuture.cancel(false);
+		}
 		connecting.set(false);
 	}
 
