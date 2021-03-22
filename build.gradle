@@ -89,28 +89,14 @@ repositories {
         url = "https://jcenter.bintray.com/"
     }
     maven {
-        url = "https://thatgamerblue.com/maven"
-        content {
-            // only grab these two artifacts from the repository
-            includeModule("com.esotericsoftware.kryo", "kryo")
-            includeModule("com.esotericsoftware.reflectasm", "reflectasm")
-        }
-    }
-    maven {
         url = "https://repo.runelite.net"
-        content {
-            // rrn throws peer not authenticated errors at random, minimize them like this
-            excludeGroupByRegex("com\\.esotericsoftware.*")
-            excludeGroup("kryonet")
-        }
     }
     mavenLocal()
 }
 
 def runeLiteVersion = "1.7.2.2"
-def kryonetVersion = "2.21"
-def kryoVersion = "2.24.0-blue"
-def reflectAsmVersion = "1.09-blue"
+def minlogVersion = "1.2"
+def objenesisVersion = "2.1"
 
 dependencies {
     // shade runelite in so i can use the dependencies such as gson in the server side
@@ -126,24 +112,20 @@ dependencies {
         compileOnly group: "net.runelite", name: "client", version: runeLiteVersion
     }
 
-    implementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
-        transitive = false
-    }
-    implementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion) {
-        exclude(module: "reflectasm")
-    }
+    implementation(files("libs/kryonet-2.21-blue.jar"))
+    implementation(files("libs/kryo-2.24.0-blue.jar"))
+    implementation("com.esotericsoftware.minlog:minlog:$minlogVersion")
+    implementation("org.objenesis:objenesis:$objenesisVersion")
 
     compileOnly "org.projectlombok:lombok:1.18.4"
     annotationProcessor "org.projectlombok:lombok:1.18.4"
 
     testImplementation "junit:junit:4.12"
 
-    testImplementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
-        transitive = false
-    }
-    testImplementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion) {
-        exclude(module: "reflectasm")
-    }
+    testImplementation(files("libs/kryonet-2.21-blue.jar"))
+    testImplementation(files("libs/kryo-2.24.0-blue.jar"))
+    testImplementation("com.esotericsoftware.minlog:minlog:$minlogVersion")
+    testImplementation("org.objenesis:objenesis:$objenesisVersion")
 
     testImplementation group: "net.runelite", name: "client", version: runeLiteVersion
     testImplementation group: "net.runelite", name: "jshell", version: runeLiteVersion

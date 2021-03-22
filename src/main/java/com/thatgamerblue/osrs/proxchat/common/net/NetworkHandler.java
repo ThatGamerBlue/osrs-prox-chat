@@ -80,15 +80,15 @@ public abstract class NetworkHandler
 		kryo.register(UUID.class, new UUIDSerializer());
 
 		// register C2S packets
-		kryo.register(C2SAuth.class);
-		kryo.register(C2SMicPacket.class);
+		kryo.register(C2SAuth.class, new C2SAuth.Serializer());
+		kryo.register(C2SMicPacket.class, new C2SMicPacket.Serializer());
 		kryo.register(C2SUpdatePacket.class, new C2SUpdatePacket.Serializer());
 
 		// register S2C packets
 		kryo.register(S2CAuthReq.class, new S2CAuthReq.Serializer());
-		kryo.register(S2CKillDecoder.class);
+		kryo.register(S2CKillDecoder.class, new S2CKillDecoder.Serializer());
 		kryo.register(S2CMicPacket.class, new S2CMicPacket.Serializer());
-		kryo.register(S2CUpdateReq.class);
+		kryo.register(S2CUpdateReq.class, new S2CUpdateReq.Serializer());
 
 		EndPoint endPoint;
 
