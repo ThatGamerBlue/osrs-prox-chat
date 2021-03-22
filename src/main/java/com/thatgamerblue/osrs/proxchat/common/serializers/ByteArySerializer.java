@@ -26,7 +26,7 @@ public class ByteArySerializer extends Serializer<byte[]>
 	@Override
 	public void write(Kryo kryo, Output output, byte[] bytes)
 	{
-		output.write(bytes.length);
+		output.writeInt(bytes.length);
 		output.write(bytes);
 	}
 
@@ -47,7 +47,7 @@ public class ByteArySerializer extends Serializer<byte[]>
 	@Override
 	public byte[] read(Kryo kryo, Input input, Class<byte[]> aClass)
 	{
-		int len = input.read();
+		int len = input.readInt();
 		byte[] ary = new byte[len];
 		input.read(ary);
 		return ary;

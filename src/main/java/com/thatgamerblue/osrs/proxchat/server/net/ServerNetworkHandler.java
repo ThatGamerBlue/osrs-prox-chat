@@ -130,16 +130,6 @@ public class ServerNetworkHandler extends NetworkHandler
 	}
 
 	/**
-	 * Sends an object to everyone over the network, synchronized on {@code this}
-	 *
-	 * @param object object to send
-	 */
-	public void sendTCPToAll(Object object)
-	{
-		netServer.sendToAllTCP(object);
-	}
-
-	/**
 	 * Sends an object to everyone except one client over the network, synchronized on {@code this}
 	 *
 	 * @param connection where to not send the object to

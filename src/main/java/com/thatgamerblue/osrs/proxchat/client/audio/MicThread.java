@@ -37,7 +37,7 @@ public class MicThread extends Thread
 	 * Encodes the audio into the correct format for the network
 	 * Might remove this later
 	 */
-	private final OpusEncoder encoder = OpusEncoder.create();
+	private final OpusEncoderWrapper encoder = OpusEncoderWrapper.create();
 	/**
 	 * Client network handler for sending mic data out
 	 */
@@ -118,8 +118,7 @@ public class MicThread extends Thread
 			throw new RuntimeException("Microphone uninitialized.");
 		}
 
-		ShortBuffer pcm = ShortBuffer.allocate(AudioConstants.FRAME_SIZE / 2);
-		ByteBuffer encoded = ByteBuffer.allocate(2048);
+		byte[] encoded = new byte[2048];
 		byte[] inBuf = new byte[AudioConstants.FRAME_SIZE];
 
 		while (running.get())
@@ -138,17 +137,18 @@ public class MicThread extends Thread
 			mic.read(inBuf, 0, inBuf.length);
 			AudioUtil.amplify(inBuf, amplificationSupplier.get() / 25.f);
 
-			pcm.clear();
-			encoded.clear();
+			Arrays.fill(encoded, (byte) 0);
 
+			int pcmShorts = 0;
+			// stupid array allocation because the library uses .length
+			short[] pcmBuf = new short[inBuf.length / 2];
 			for (int i = 0; i < inBuf.length; i += 2)
 			{
 				short s = AudioUtil.bytesToShort(inBuf[i], inBuf[i + 1]);
-				pcm.put(s);
+				pcmBuf[pcmShorts++] = s;
 			}
-			pcm.flip();
 
-			int bytesEncoded = encoder.encode(pcm, encoded);
+			int bytesEncoded = encoder.encode(pcmBuf, encoded);
 
 			if (bytesEncoded < 0)
 			{
@@ -156,7 +156,8 @@ public class MicThread extends Thread
 			}
 
 			byte[] opusEncoded = new byte[bytesEncoded];
-			encoded.get(opusEncoded);
+
+			System.arraycopy(encoded, 0, opusEncoded, 0, bytesEncoded);
 
 			// we have to keep the opus encoder updated with latest info at all times
 			// so we can only bail out here
@@ -214,7 +215,6 @@ public class MicThread extends Thread
 
 		mic.stop();
 		mic.close();
-		encoder.destroy();
 	}
 
 	/**

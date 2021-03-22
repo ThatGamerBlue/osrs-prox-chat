@@ -111,7 +111,6 @@ def runeLiteVersion = "1.7.2.2"
 def kryonetVersion = "2.21"
 def kryoVersion = "2.24.0-blue"
 def reflectAsmVersion = "1.09-blue"
-def opusJavaVersion = "1.0.4"
 
 dependencies {
     // shade runelite in so i can use the dependencies such as gson in the server side
@@ -130,10 +129,9 @@ dependencies {
     implementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
         transitive = false
     }
-    implementation group: "com.esotericsoftware.reflectasm", name: "reflectasm", version: reflectAsmVersion, classifier: "shaded"
-    implementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion)
-
-    implementation group: "club.minnced", name: "opus-java", version: opusJavaVersion
+    implementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion) {
+        exclude(module: "reflectasm")
+    }
 
     compileOnly "org.projectlombok:lombok:1.18.4"
     annotationProcessor "org.projectlombok:lombok:1.18.4"
@@ -143,10 +141,10 @@ dependencies {
     testImplementation(group: "kryonet", name: "kryonet", version: kryonetVersion) {
         transitive = false
     }
-    testImplementation group: "com.esotericsoftware.reflectasm", name: "reflectasm", version: reflectAsmVersion, classifier: "shaded"
-    testImplementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion)
+    testImplementation(group: "com.esotericsoftware.kryo", name: "kryo", version: kryoVersion) {
+        exclude(module: "reflectasm")
+    }
 
-    testImplementation group: "club.minnced", name: "opus-java", version: opusJavaVersion
     testImplementation group: "net.runelite", name: "client", version: runeLiteVersion
     testImplementation group: "net.runelite", name: "jshell", version: runeLiteVersion
 }

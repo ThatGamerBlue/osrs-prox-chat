@@ -31,6 +31,7 @@ import net.runelite.api.coords.WorldPoint;
  * Network handler for the client side.
  * Entrypoint for all packets received from the server
  */
+@SuppressWarnings("unused")
 @Slf4j
 public class ClientNetworkHandler extends NetworkHandler
 {

@@ -3,6 +3,7 @@ package com.thatgamerblue.osrs.proxchat.client.audio;
 import com.thatgamerblue.osrs.proxchat.common.audio.AudioConstants;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CMicPacket;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,7 @@ public class SpeakerThread extends Thread
 	/**
 	 * Opus decoder for this thread
 	 */
-	private final OpusDecoder decoder;
+	private final OpusDecoderWrapper decoder;
 
 	/**
 	 * Microphone input device
@@ -63,7 +64,7 @@ public class SpeakerThread extends Thread
 		Supplier<Integer> volume
 	)
 	{
-		this.decoder = OpusDecoder.create();
+		this.decoder = OpusDecoderWrapper.create();
 		this.volume = volume;
 
 		SourceDataLine __speaker;
@@ -97,12 +98,11 @@ public class SpeakerThread extends Thread
 		{
 			log.error("Failed to initialize speaker", e);
 			speaker.close();
-			decoder.destroy();
 			return;
 		}
 
 		FloatControl gainControl = (FloatControl) speaker.getControl(FloatControl.Type.MASTER_GAIN);
-		ShortBuffer sBufDecoded = ShortBuffer.allocate(4096);
+		short[] sBufDecoded = new short[4096];
 
 		while (running.get())
 		{
@@ -141,7 +141,8 @@ public class SpeakerThread extends Thread
 			float volumeDb = (float) (10d * Math.log(volumeScale)) * ((float) volume.get() / 50.0f);
 			gainControl.setValue(Math.min(Math.max(volumeDb, gainControl.getMinimum()), gainControl.getMaximum()));
 
-			sBufDecoded.clear();
+			Arrays.fill(sBufDecoded, (short) 0);
+
 			int decodedShorts = decoder.decode(packet.data, sBufDecoded);
 
 			if (decodedShorts < 0)
@@ -150,7 +151,8 @@ public class SpeakerThread extends Thread
 			}
 
 			short[] sDecoded = new short[decodedShorts];
-			sBufDecoded.get(sDecoded);
+
+			System.arraycopy(sBufDecoded, 0, sDecoded, 0, sDecoded.length);
 
 			byte[] decoded = new byte[sDecoded.length * 2];
 			for (int i = 0; i < sDecoded.length; i++)
@@ -168,7 +170,6 @@ public class SpeakerThread extends Thread
 
 		speaker.stop();
 		speaker.close();
-		decoder.destroy();
 		soundQueue.clear();
 	}
 

@@ -1,6 +1,5 @@
 package com.thatgamerblue.osrs.proxchat.client;
 
-import club.minnced.opus.util.OpusLibrary;
 import com.esotericsoftware.minlog.Log;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
@@ -105,15 +104,6 @@ public class ProxChatClientPlugin extends Plugin
 		executor = Executors.newSingleThreadScheduledExecutor();
 		network = new ClientNetworkHandler(this, client, config::address, config::port, config::password);
 		network.initKryonet();
-
-		try
-		{
-			OpusLibrary.loadFromJar();
-		}
-		catch (IOException e)
-		{
-			log.error("Failed to load Opus library.", e);
-		}
 
 		micThread = new MicThread(network, config::micVolume, config::activationThreshold, config::audioMode, client::getGameState);
 		micThread.start();

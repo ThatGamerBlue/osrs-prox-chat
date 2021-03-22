@@ -22,6 +22,7 @@ import java.util.UUID;
  * Superclass for both client and server networking classes.
  * Contains common code such as message receiving and initialization of kryo.
  */
+@SuppressWarnings("unused")
 public abstract class NetworkHandler
 {
 	/**
@@ -81,12 +82,12 @@ public abstract class NetworkHandler
 		// register C2S packets
 		kryo.register(C2SAuth.class);
 		kryo.register(C2SMicPacket.class);
-		kryo.register(C2SUpdatePacket.class);
+		kryo.register(C2SUpdatePacket.class, new C2SUpdatePacket.Serializer());
 
 		// register S2C packets
-		kryo.register(S2CAuthReq.class);
+		kryo.register(S2CAuthReq.class, new S2CAuthReq.Serializer());
 		kryo.register(S2CKillDecoder.class);
-		kryo.register(S2CMicPacket.class);
+		kryo.register(S2CMicPacket.class, new S2CMicPacket.Serializer());
 		kryo.register(S2CUpdateReq.class);
 
 		EndPoint endPoint;
