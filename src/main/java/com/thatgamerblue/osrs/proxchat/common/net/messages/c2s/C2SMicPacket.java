@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * A packet sent from client to server containing opus-encoded microphone data
+ * A packet sent from client to server containing microphone data
  */
 @ToString
 @NoArgsConstructor
@@ -16,7 +16,7 @@ import lombok.ToString;
 public class C2SMicPacket
 {
 	/**
-	 * Opus encoded microphone data
+	 * Microphone data
 	 */
 	public byte[] data;
 

@@ -34,11 +34,6 @@ public class SpeakerThread extends Thread
 	private final ArrayBlockingQueue<S2CMicPacket> soundQueue = new ArrayBlockingQueue<>(1000 / AudioConstants.MS_PER_PACKET);
 
 	/**
-	 * Opus decoder for this thread
-	 */
-	private final OpusDecoderWrapper decoder;
-
-	/**
 	 * Microphone input device
 	 */
 	private final SourceDataLine speaker;
@@ -54,7 +49,7 @@ public class SpeakerThread extends Thread
 	private final Supplier<Integer> volume;
 
 	/**
-	 * Constructs a thread to play Opus-encoded mic data
+	 * Constructs a thread to play mic data
 	 *
 	 * @param uuid   server-assigned uuid of this thread
 	 * @param volume volume of the speaker
@@ -64,7 +59,6 @@ public class SpeakerThread extends Thread
 		Supplier<Integer> volume
 	)
 	{
-		this.decoder = OpusDecoderWrapper.create();
 		this.volume = volume;
 
 		SourceDataLine __speaker;
@@ -102,7 +96,6 @@ public class SpeakerThread extends Thread
 		}
 
 		FloatControl gainControl = (FloatControl) speaker.getControl(FloatControl.Type.MASTER_GAIN);
-		short[] sBufDecoded = new short[4096];
 
 		while (running.get())
 		{
@@ -141,26 +134,7 @@ public class SpeakerThread extends Thread
 			float volumeDb = (float) (10d * Math.log(volumeScale)) * ((float) volume.get() / 50.0f);
 			gainControl.setValue(Math.min(Math.max(volumeDb, gainControl.getMinimum()), gainControl.getMaximum()));
 
-			Arrays.fill(sBufDecoded, (short) 0);
-
-			int decodedShorts = decoder.decode(packet.data, sBufDecoded);
-
-			if (decodedShorts < 0)
-			{
-				throw new RuntimeException("Failed to decode opus audio");
-			}
-
-			short[] sDecoded = new short[decodedShorts];
-
-			System.arraycopy(sBufDecoded, 0, sDecoded, 0, sDecoded.length);
-
-			byte[] decoded = new byte[sDecoded.length * 2];
-			for (int i = 0; i < sDecoded.length; i++)
-			{
-				byte[] bytes = AudioUtil.shortToBytes(sDecoded[i]);
-				decoded[i * 2] = bytes[0];
-				decoded[i * 2 + 1] = bytes[1];
-			}
+			byte[] decoded = packet.data;
 
 			byte[] stereo = AudioUtil.convertToStereo(decoded);
 

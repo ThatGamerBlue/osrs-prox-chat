@@ -34,11 +34,6 @@ public class MicThread extends Thread
 	 */
 	private final AtomicBoolean toggleMute = new AtomicBoolean(false);
 	/**
-	 * Encodes the audio into the correct format for the network
-	 * Might remove this later
-	 */
-	private final OpusEncoderWrapper encoder = OpusEncoderWrapper.create();
-	/**
 	 * Client network handler for sending mic data out
 	 */
 	private final ClientNetworkHandler networkHandler;
@@ -118,7 +113,6 @@ public class MicThread extends Thread
 			throw new RuntimeException("Microphone uninitialized.");
 		}
 
-		byte[] encoded = new byte[2048];
 		byte[] inBuf = new byte[AudioConstants.FRAME_SIZE];
 
 		while (running.get())
@@ -131,36 +125,6 @@ public class MicThread extends Thread
 				sleep(1);
 				continue;
 			}
-
-			//byte[] inBuf = new byte[avail];
-			Arrays.fill(inBuf, (byte) 0);
-			mic.read(inBuf, 0, inBuf.length);
-			AudioUtil.amplify(inBuf, amplificationSupplier.get() / 25.f);
-
-			Arrays.fill(encoded, (byte) 0);
-
-			int pcmShorts = 0;
-			// stupid array allocation because the library uses .length
-			short[] pcmBuf = new short[inBuf.length / 2];
-			for (int i = 0; i < inBuf.length; i += 2)
-			{
-				short s = AudioUtil.bytesToShort(inBuf[i], inBuf[i + 1]);
-				pcmBuf[pcmShorts++] = s;
-			}
-
-			int bytesEncoded = encoder.encode(pcmBuf, encoded);
-
-			if (bytesEncoded < 0)
-			{
-				throw new RuntimeException("Failed to encode audio data");
-			}
-
-			byte[] opusEncoded = new byte[bytesEncoded];
-
-			System.arraycopy(encoded, 0, opusEncoded, 0, bytesEncoded);
-
-			// we have to keep the opus encoder updated with latest info at all times
-			// so we can only bail out here
 
 			if (toggleMute.get())
 			{
@@ -178,13 +142,17 @@ public class MicThread extends Thread
 				continue;
 			}
 
+			Arrays.fill(inBuf, (byte) 0);
+			mic.read(inBuf, 0, inBuf.length);
+			AudioUtil.amplify(inBuf, amplificationSupplier.get() / 25.f);
+
 			switch (audioModeSupplier.get())
 			{
 				case PUSH_TO_TALK:
 					if (pttDown.get())
 					{
 						micHoldOnTime = System.currentTimeMillis() + 120;
-						networkHandler.sendTCP(new C2SMicPacket(opusEncoded));
+						networkHandler.sendTCP(new C2SMicPacket(inBuf));
 						continue;
 					}
 					break;
@@ -193,7 +161,7 @@ public class MicThread extends Thread
 					if (highestLvl > thresholdSupplier.get())
 					{
 						micHoldOnTime = System.currentTimeMillis() + 120;
-						networkHandler.sendTCP(new C2SMicPacket(opusEncoded));
+						networkHandler.sendTCP(new C2SMicPacket(inBuf));
 						continue;
 					}
 					break;
@@ -202,7 +170,7 @@ public class MicThread extends Thread
 			if (micHoldOnTime > System.currentTimeMillis())
 			{
 				// if the mic is being held on, send data anyway
-				networkHandler.sendTCP(new C2SMicPacket(opusEncoded));
+				networkHandler.sendTCP(new C2SMicPacket(inBuf));
 				continue;
 			}
 

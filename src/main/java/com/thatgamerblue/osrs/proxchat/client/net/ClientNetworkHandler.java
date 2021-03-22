@@ -61,7 +61,7 @@ public class ClientNetworkHandler extends NetworkHandler
 	private final Supplier<String> password;
 
 	/**
-	 * Holds all the Opus decoder instances this handler controls
+	 * Holds all the SpeakerThread instances this handler controls
 	 */
 	private final ConcurrentHashMap<UUID, SpeakerThread> speakers = new ConcurrentHashMap<>();
 
@@ -114,7 +114,7 @@ public class ClientNetworkHandler extends NetworkHandler
 	/**
 	 * Initializes an {@link NetworkHandler} in client operating mode
 	 * Handles all connections to the server.
-	 * Handles memory management of OPUS encoders and decoders.
+	 * Handles memory management of audio handlers.
 	 *
 	 * @param plugin            instance of the plugin that controls this
 	 * @param client            instance of the RS client
@@ -330,7 +330,7 @@ public class ClientNetworkHandler extends NetworkHandler
 	}
 
 	/**
-	 * Disconnects the open server connection and destroys all Opus codec instances.
+	 * Disconnects the open server connection and destroys all audio players.
 	 * Reusable after calling {@link ClientNetworkHandler#connect()}
 	 */
 	@Override

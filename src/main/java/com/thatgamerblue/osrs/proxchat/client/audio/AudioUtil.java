@@ -18,6 +18,68 @@ public class AudioUtil
 	}
 
 	/**
+	 * Converts a short array to a byte array
+	 *
+	 * @param sIn short array
+	 * @return byte array containing the shorts split up
+	 */
+	public static byte[] shortsToBytes(short[] sIn)
+	{
+		byte[] bAry = new byte[sIn.length * 2];
+
+		shortsToBytes(sIn, bAry);
+
+		return bAry;
+	}
+
+	/**
+	 * Converts a short array to a byte array
+	 *
+	 * @param sIn  short array
+	 * @param bOut output byte array
+	 */
+	public static void shortsToBytes(short[] sIn, byte[] bOut)
+	{
+		for (int i = 0; i < sIn.length; i++)
+		{
+			byte[] bytes = AudioUtil.shortToBytes(sIn[i]);
+			bOut[i * 2] = bytes[0];
+			bOut[i * 2 + 1] = bytes[1];
+		}
+	}
+
+	/**
+	 * Converts a byte array to a short array
+	 *
+	 * @param bIn byte array
+	 * @return short array containing the bytes merged
+	 */
+	public static short[] bytesToShorts(byte[] bIn)
+	{
+		short[] sOut = new short[bIn.length / 2];
+
+		bytesToShorts(bIn, sOut);
+
+		return sOut;
+	}
+
+	/**
+	 * Converts a byte array to a short array
+	 *
+	 * @param bIn  byte array
+	 * @param sOut output short array
+	 */
+	public static void bytesToShorts(byte[] bIn, short[] sOut)
+	{
+		int j = 0;
+		for (int i = 0; i < bIn.length; i += 2)
+		{
+			short s = AudioUtil.bytesToShort(bIn[i], bIn[i + 1]);
+			sOut[j++] = s;
+		}
+	}
+
+	/**
 	 * Converts a short into two bytes
 	 *
 	 * @param s short value
