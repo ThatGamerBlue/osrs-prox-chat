@@ -259,7 +259,7 @@ public class ClientNetworkHandler extends NetworkHandler
 			SpeakerThread speaker = speakers.get(decoderId);
 			if (speaker == null)
 			{
-				speaker = new SpeakerThread(decoderId, () -> plugin.getConfig().speakerVolume());
+				speaker = new SpeakerThread(decoderId, () -> plugin.getConfig().speakerVolume(), client::getGameState);
 				speakers.put(decoderId, speaker);
 				speaker.start();
 			}

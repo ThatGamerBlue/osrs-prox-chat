@@ -117,17 +117,20 @@ public class MicThread extends Thread
 		{
 			if (toggleMute.get())
 			{
+				sleep(1);
 				continue;
 			}
 
 			if (!networkHandler.isConnected())
 			{
+				sleep(1);
 				continue;
 			}
 
 			GameState currentState = gameStateSupplier.get();
 			if (currentState != GameState.LOADING && currentState != GameState.LOGGED_IN)
 			{
+				sleep(1);
 				continue;
 			}
 

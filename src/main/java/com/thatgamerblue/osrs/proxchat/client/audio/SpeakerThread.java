@@ -13,6 +13,7 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.GameState;
 
 /**
  * Plays speaker data fed to it via the queue
@@ -41,6 +42,11 @@ public class SpeakerThread extends Thread
 	private final Supplier<Integer> volume;
 
 	/**
+	 * Current game state
+	 */
+	private final Supplier<GameState> gameState;
+
+	/**
 	 * Constructs a thread to play mic data
 	 *
 	 * @param uuid   server-assigned uuid of this thread
@@ -48,10 +54,12 @@ public class SpeakerThread extends Thread
 	 */
 	public SpeakerThread(
 		UUID uuid,
-		Supplier<Integer> volume
+		Supplier<Integer> volume,
+		Supplier<GameState> gameState
 	)
 	{
 		this.volume = volume;
+		this.gameState = gameState;
 
 		SourceDataLine __speaker;
 		try
@@ -113,7 +121,11 @@ public class SpeakerThread extends Thread
 				continue;
 			}
 
-			// here we'd check gamestate if required, the server shouldn't send us packets if we're logged out of the game anyway
+			GameState gs = gameState.get();
+			if (gs.getState() > 30 || gs.getState() < 25)
+			{
+				continue;
+			}
 
 			if (speaker.getBufferSize() - speaker.available() <= 0)
 			{

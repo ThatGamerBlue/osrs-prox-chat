@@ -22,7 +22,6 @@ import java.util.UUID;
  * Superclass for both client and server networking classes.
  * Contains common code such as message receiving and initialization of kryo.
  */
-@SuppressWarnings("unused")
 public abstract class NetworkHandler
 {
 	/**
