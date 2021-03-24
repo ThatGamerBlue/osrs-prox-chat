@@ -115,15 +115,6 @@ public class MicThread extends Thread
 
 		while (running.get())
 		{
-			mic.start();
-			int avail = mic.available();
-
-			if (avail < AudioConstants.FRAME_SIZE)
-			{
-				sleep(1);
-				continue;
-			}
-
 			if (toggleMute.get())
 			{
 				continue;
@@ -137,6 +128,14 @@ public class MicThread extends Thread
 			GameState currentState = gameStateSupplier.get();
 			if (currentState != GameState.LOADING && currentState != GameState.LOGGED_IN)
 			{
+				continue;
+			}
+
+			mic.start();
+			int avail = mic.available();
+			if (avail < AudioConstants.FRAME_SIZE)
+			{
+				sleep(1);
 				continue;
 			}
 

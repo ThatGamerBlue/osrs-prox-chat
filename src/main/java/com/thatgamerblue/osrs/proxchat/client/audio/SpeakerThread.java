@@ -146,10 +146,10 @@ public class SpeakerThread extends Thread
 	 * @param distance distance away from player in tiles * 128
 	 * @return audio multiplier
 	 */
-	private double scaleAudio(double distance)
+	private float scaleAudio(int distance)
 	{
-		double val = 1.0d - ((((distance - (5 * 128)) * 0.99d) / 1280) + 0.01d);
-		return Math.max(0.0d, Math.min(val, 1.0d));
+		float val = 1.0f - ((((distance - (5f * 128f)) * 0.99f) / 1280f) + 0.01f);
+		return Math.max(0.0f, Math.min(val, 1.0f));
 	}
 
 	/**

@@ -31,7 +31,6 @@ import net.runelite.api.coords.LocalPoint;
  * Network handler for the client side.
  * Entrypoint for all packets received from the server
  */
-@SuppressWarnings("unused")
 @Slf4j
 public class ClientNetworkHandler extends NetworkHandler
 {
@@ -86,6 +85,11 @@ public class ClientNetworkHandler extends NetworkHandler
 	 * Whether or not we are currently attempting to connect to the server
 	 */
 	private final AtomicBoolean connecting = new AtomicBoolean(false);
+
+	/**
+	 * Holds the last state we sent to the server
+	 */
+	private C2SUpdatePacket lastState = null;
 
 	/**
 	 * Maximum value for the backoff timer in seconds
@@ -145,6 +149,11 @@ public class ClientNetworkHandler extends NetworkHandler
 	@Override
 	public void connect()
 	{
+		if (connectionAddress.get().equals("<disabled>"))
+		{
+			return;
+		}
+
 		if (connecting.get())
 		{
 			return;
@@ -329,7 +338,15 @@ public class ClientNetworkHandler extends NetworkHandler
 			return;
 		}
 
-		sendTCP(new C2SUpdatePacket(x, y, plane, world, gameState));
+		C2SUpdatePacket packet = new C2SUpdatePacket(x, y, plane, world, gameState);
+		if (packet.equals(lastState))
+		{
+			return;
+		}
+
+		lastState = packet;
+
+		sendTCP(packet);
 	}
 
 	/**

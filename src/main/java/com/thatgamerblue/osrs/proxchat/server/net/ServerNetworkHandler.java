@@ -189,6 +189,7 @@ public class ServerNetworkHandler extends NetworkHandler
 			Integer nonce;
 			if ((nonce = nonceMap.get(connection.getID())) == null)
 			{
+				System.out.println("Closing connection with " + connection.getID() + " due to lack of nonce");
 				connection.close();
 				return;
 			}
@@ -225,6 +226,7 @@ public class ServerNetworkHandler extends NetworkHandler
 
 			if (result != 0)
 			{
+				System.out.println("Closing connection with " + connection.getID() + " due to an invalid password");
 				connection.close();
 				return;
 			}
@@ -243,6 +245,7 @@ public class ServerNetworkHandler extends NetworkHandler
 		if (!authenticatedClients.contains(connection.getID()))
 		{
 			connection.close();
+			return;
 		}
 
 		if (message instanceof C2SUpdatePacket)
