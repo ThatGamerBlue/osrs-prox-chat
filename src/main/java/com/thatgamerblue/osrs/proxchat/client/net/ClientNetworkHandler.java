@@ -368,4 +368,14 @@ public class ClientNetworkHandler extends NetworkHandler
 		}
 		while (!speakerMuted.compareAndSet(v, !v));
 	}
+
+	/**
+	 * Are we currently attempting to connect to the server
+	 *
+	 * @return true if connecting, false otherwise
+	 */
+	public boolean isConnecting()
+	{
+		return connecting.get();
+	}
 }
