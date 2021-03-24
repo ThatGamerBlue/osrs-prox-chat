@@ -12,8 +12,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -166,7 +166,7 @@ public class ProxChatClientPlugin extends Plugin
 	 * @param event ignored
 	 */
 	@Subscribe
-	public void onGameTick(GameTick event)
+	public void onClientTick(ClientTick event)
 	{
 		network.sendUpdate(client.getGameState().getState());
 	}
