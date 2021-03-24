@@ -26,6 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+import net.runelite.api.Perspective;
 
 /**
  * Network handler for the server side.
@@ -36,7 +37,7 @@ public class ServerNetworkHandler extends NetworkHandler
 	/**
 	 * Maximum tile distance a player can be heard from
 	 */
-	private static final int MAX_DISTANCE = 15;
+	private static final int MAX_DISTANCE = 15 * Perspective.LOCAL_TILE_SIZE;
 
 	/**
 	 * A secure random instance used for generating nonces

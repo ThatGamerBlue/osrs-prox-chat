@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.coords.LocalPoint;
 
 /**
  * Network handler for the client side.
@@ -310,9 +310,12 @@ public class ClientNetworkHandler extends NetworkHandler
 		int x, y, plane, world;
 		if (client.getLocalPlayer() != null)
 		{
-			WorldPoint wp = client.getLocalPlayer().getWorldLocation();
-			x = wp.getX();
-			y = wp.getY();
+			LocalPoint lp = client.getLocalPlayer().getLocalLocation();
+			int lX = lp.getX();
+			int lY = lp.getY();
+
+			x = lX + (client.getBaseX() * 128);
+			y = lY + (client.getBaseY() * 128);
 			plane = client.getPlane();
 			world = client.getWorld();
 		}

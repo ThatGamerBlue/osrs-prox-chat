@@ -2,8 +2,6 @@ package com.thatgamerblue.osrs.proxchat.client.audio;
 
 import com.thatgamerblue.osrs.proxchat.common.audio.AudioConstants;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.s2c.S2CMicPacket;
-import java.nio.ShortBuffer;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SpeakerThread extends Thread
 {
-	/**
-	 * Table for Volume scaling based off distance
-	 */
-	//                                            0   1   2   3   4   5    6    7     8    9    10    11   12    13   14    15
-	private static final float[] VOLUME_TABLE = {1f, 1f, 1f, 1f, 1f, 1f, .95f, .9f, .85f, .8f, .75f, .7f, .65f, .6f, .55f, .5f};
-
 	/**
 	 * Holds audio data in FIFO queue, initial capacity is one second of audio
 	 */
@@ -130,7 +122,7 @@ public class SpeakerThread extends Thread
 				speaker.write(data, 0, data.length);
 			}
 
-			float volumeScale = VOLUME_TABLE[packet.distance];
+			float volumeScale = (float) scaleAudio(packet.distance);
 			float volumeDb = (float) (10d * Math.log(volumeScale)) * ((float) volume.get() / 50.0f);
 			gainControl.setValue(Math.min(Math.max(volumeDb, gainControl.getMinimum()), gainControl.getMaximum()));
 
@@ -145,6 +137,19 @@ public class SpeakerThread extends Thread
 		speaker.stop();
 		speaker.close();
 		soundQueue.clear();
+	}
+
+	/**
+	 * Scales audio levels based off distance
+	 * Algorithm from https://stackoverflow.com/a/929107 because I'm too stupid to write it myself
+	 *
+	 * @param distance distance away from player in tiles * 128
+	 * @return audio multiplier
+	 */
+	private double scaleAudio(double distance)
+	{
+		double val = 1.0d - ((((distance - (5 * 128)) * 0.99d) / 1280) + 0.01d);
+		return Math.max(0.0d, Math.min(val, 1.0d));
 	}
 
 	/**

@@ -3,8 +3,6 @@ package com.thatgamerblue.osrs.proxchat.client.audio;
 import com.thatgamerblue.osrs.proxchat.client.net.ClientNetworkHandler;
 import com.thatgamerblue.osrs.proxchat.common.audio.AudioConstants;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SMicPacket;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
