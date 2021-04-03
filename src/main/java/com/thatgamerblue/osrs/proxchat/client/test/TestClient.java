@@ -91,8 +91,8 @@ public class TestClient
 		 */
 		private void initKryonet()
 		{
-			client.getKryo().register(S2CTestPacket.class);
-			client.getKryo().register(C2STestPacket.class);
+			client.getKryo().register(S2CTestPacket.class, new S2CTestPacket.Serializer());
+			client.getKryo().register(C2STestPacket.class, new C2STestPacket.Serializer());
 
 			client.addListener(new Listener()
 			{
