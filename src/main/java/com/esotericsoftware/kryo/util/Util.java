@@ -28,11 +28,6 @@ public class Util {
 		return Void.class;
 	}
 
-	static public boolean isWrapperClass (Class type) {
-		return type == Integer.class || type == Float.class || type == Boolean.class || type == Long.class || type == Byte.class
-			|| type == Character.class || type == Short.class || type == Double.class;
-	}
-
 	/** Logs a message about an object. The log level and the string format of the object depend on the object type. */
 	static public void log (String message, Object object) {
 		if (object == null) {
@@ -42,24 +37,7 @@ public class Util {
 		Class type = object.getClass();
 		if (type.isPrimitive() || type == Boolean.class || type == Byte.class || type == Character.class || type == Short.class
 			|| type == Integer.class || type == Long.class || type == Float.class || type == Double.class || type == String.class) {
-			if (TRACE) trace("kryo", message + ": " + string(object));
-		} else {
-			debug("kryo", message + ": " + string(object));
 		}
-	}
-
-	/** Returns the object formatted as a string. The format depends on the object's type and whether {@link Object#toString()} has
-	 * been overridden. */
-	static public String string (Object object) {
-		if (object == null) return "null";
-		Class type = object.getClass();
-		if (type.isArray()) return className(type);
-		try {
-			if (type.getMethod("toString", new Class[0]).getDeclaringClass() == Object.class)
-				return TRACE ? className(type) : type.getSimpleName();
-		} catch (Exception ignored) {
-		}
-		return String.valueOf(object);
 	}
 
 	/** Returns the class formatted as a string. The format varies depending on the type. */
