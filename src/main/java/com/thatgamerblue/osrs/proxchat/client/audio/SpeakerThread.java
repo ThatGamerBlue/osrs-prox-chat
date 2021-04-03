@@ -49,8 +49,9 @@ public class SpeakerThread extends Thread
 	/**
 	 * Constructs a thread to play mic data
 	 *
-	 * @param uuid   server-assigned uuid of this thread
-	 * @param volume volume of the speaker
+	 * @param uuid      server-assigned uuid of this thread
+	 * @param volume    volume of the speaker
+	 * @param gameState current client game state
 	 */
 	public SpeakerThread(
 		UUID uuid,

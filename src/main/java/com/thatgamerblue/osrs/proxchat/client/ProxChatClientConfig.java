@@ -177,4 +177,20 @@ public interface ProxChatClientConfig extends Config
 	{
 		return 50;
 	}
+
+	/**
+	 * Toggle to display license information for icons used
+	 *
+	 * @return unused, boolean to make it a checkbox in the config panel
+	 */
+	@ConfigItem(
+		keyName = "showLicenseInfo",
+		name = "Display Icon License",
+		description = "Acts as a button. Click to show icon license info",
+		position = 99
+	)
+	default boolean showLicenseInfo()
+	{
+		return false;
+	}
 }

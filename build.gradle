@@ -1,9 +1,9 @@
 plugins {
     id "java"
-    // id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-/*task buildServer(description: "Builds the server software") {
+task buildServer(description: "Builds the server software") {
     dependsOn(shadowJar)
 
     // gradle hack
@@ -81,7 +81,7 @@ task runPlugin(description: "Runs the runelite client with the plugin", type: Ja
     classpath = sourceSets.main.runtimeClasspath
 
     main = "com.thatgamerblue.osrs.proxchat.client.test.RunPlugin"
-}*/
+}
 
 repositories {
     mavenCentral()
@@ -123,7 +123,7 @@ dependencies {
     testImplementation(files("libs/kryo-2.24.0-blue.jar"))
     testImplementation("com.esotericsoftware.minlog:minlog:$minlogVersion")
     testImplementation("org.objenesis:objenesis:$objenesisVersion")
-
+\
     testImplementation group: "net.runelite", name: "client", version: runeLiteVersion
     testImplementation group: "net.runelite", name: "jshell", version: runeLiteVersion
 }

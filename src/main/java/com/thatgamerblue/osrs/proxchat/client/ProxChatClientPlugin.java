@@ -9,6 +9,8 @@ import com.thatgamerblue.osrs.proxchat.client.net.ClientNetworkHandler;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -20,6 +22,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 /**
  * Entrypoint for the Proximity Chat client
@@ -33,6 +36,19 @@ import net.runelite.client.plugins.PluginDescriptor;
 )
 public class ProxChatClientPlugin extends Plugin
 {
+	/**
+	 * License string for icons
+	 */
+	private static final String ICON_LICENSE =
+		"Icons from iconfinder.com (Benjamin STAWARZ)\r\n" +
+			"All licensed under CC Abbrib. 3.0 Unported:\r\n" +
+			"https://creativecommons.org/licenses/by/3.0/\r\n" +
+			"Disconnected: iconfinder.com/icons/6137632\r\n" +
+			"Output Muted: iconfinder.com/icons/6138050\r\n" +
+			"Mic Muted: iconfinder.com/icons/6138089\r\n" +
+			"Mic Active: iconfinder.com/icons/6138088\r\n" +
+			"Modified by ThatGamerBlue, filled in icons";
+
 	/**
 	 * Set of config keys that require disconnecting and reconnecting to the server
 	 */
@@ -68,6 +84,18 @@ public class ProxChatClientPlugin extends Plugin
 	 */
 	@Inject
 	private ProxKeyHandler keyHandler;
+
+	/**
+	 * RuneLite's overlay manager, for registering overlays to be drawn
+	 */
+	@Inject
+	private OverlayManager overlayManager;
+
+	/**
+	 * Instance of our overlay for displaying state to the user
+	 */
+	@Inject
+	private ProxChatClientOverlay overlay;
 
 	/**
 	 * The networking handler for the client side
@@ -110,6 +138,8 @@ public class ProxChatClientPlugin extends Plugin
 		executor.submit(() -> network.connect());
 
 		keyManager.registerKeyListener(keyHandler);
+
+		overlayManager.add(overlay);
 	}
 
 	/**
@@ -118,6 +148,8 @@ public class ProxChatClientPlugin extends Plugin
 	@Override
 	protected void shutDown()
 	{
+		overlayManager.remove(overlay);
+		
 		keyManager.unregisterKeyListener(keyHandler);
 		network.cancelConnecting();
 		executor.submit(() -> network.disconnect());
@@ -132,6 +164,7 @@ public class ProxChatClientPlugin extends Plugin
 
 	/**
 	 * Fired whenever a config key changes. Used to detect when to disconnect from and reconnect to the server
+	 * Also used to show icon license information
 	 *
 	 * @param event ConfigChanged event object fired by runelite
 	 */
@@ -143,21 +176,23 @@ public class ProxChatClientPlugin extends Plugin
 			return;
 		}
 
-		if (!RECONNECT_CONFIGS.contains(event.getKey()))
+		if (RECONNECT_CONFIGS.contains(event.getKey()))
 		{
-			return;
-		}
-
-		executor.submit(() ->
-		{
-			if (!network.isConnected() && !network.isConnecting())
+			executor.submit(() ->
 			{
-				return;
-			}
-			network.cancelConnecting();
-			network.disconnect();
-			network.connect();
-		});
+				if (!network.isConnected() && !network.isConnecting())
+				{
+					return;
+				}
+				network.cancelConnecting();
+				network.disconnect();
+				network.connect();
+			});
+		}
+		else if ("showLicenseInfo".equals(event.getKey()))
+		{
+			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, ICON_LICENSE, "Blue's Prox Chat", JOptionPane.INFORMATION_MESSAGE));
+		}
 	}
 
 	/**

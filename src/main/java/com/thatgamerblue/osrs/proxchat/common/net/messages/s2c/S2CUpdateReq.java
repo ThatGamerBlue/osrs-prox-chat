@@ -13,6 +13,9 @@ import lombok.ToString;
 @NoArgsConstructor
 public class S2CUpdateReq
 {
+	/**
+	 * Serializes a S2CUpdateReq packet to binary
+	 */
 	public static class Serializer extends com.esotericsoftware.kryo.Serializer<S2CUpdateReq>
 	{
 		@Override

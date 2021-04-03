@@ -219,6 +219,16 @@ public class MicThread extends Thread
 	}
 
 	/**
+	 * Is the mic currently deactivated
+	 *
+	 * @return if the mic is muted by the user
+	 */
+	public boolean isToggleMute()
+	{
+		return toggleMute.get();
+	}
+
+	/**
 	 * Sleeps for {@code ms} milliseconds
 	 *
 	 * @param ms ms to sleep for
