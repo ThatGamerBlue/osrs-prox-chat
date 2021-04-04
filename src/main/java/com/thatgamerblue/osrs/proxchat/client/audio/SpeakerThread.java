@@ -135,7 +135,7 @@ public class SpeakerThread extends Thread
 				speaker.write(data, 0, data.length);
 			}
 
-			float volumeScale = (float) scaleAudio(packet.distance);
+			float volumeScale = scaleAudio(packet.distance);
 			float volumeDb = (float) (10d * Math.log(volumeScale)) * ((float) volume.get() / 50.0f);
 			gainControl.setValue(Math.min(Math.max(volumeDb, gainControl.getMinimum()), gainControl.getMaximum()));
 
@@ -161,7 +161,10 @@ public class SpeakerThread extends Thread
 	 */
 	private float scaleAudio(int distance)
 	{
-		float val = 1.0f - ((((distance - (5f * 128f)) * 0.99f) / 1280f) + 0.01f);
+		float minDist = 5f * 128f;
+		float maxDist = 15f * 128f;
+		float diff = maxDist - minDist;
+		float val = 1.0f - ((((distance - minDist) * 0.99f) / diff) + 0.01f);
 		return Math.max(0.0f, Math.min(val, 1.0f));
 	}
 

@@ -243,7 +243,7 @@ public class ClientNetworkHandler extends NetworkHandler
 		{
 			S2CMicPacket micPacket = (S2CMicPacket) message;
 
-			if (micPacket.distance < 0 || micPacket.distance > 15)
+			if (micPacket.distance < 0 || micPacket.distance > 1920)
 			{
 				// drop the packet, something's gone wrong
 				return;
