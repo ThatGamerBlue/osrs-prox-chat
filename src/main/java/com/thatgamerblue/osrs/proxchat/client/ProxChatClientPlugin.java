@@ -31,8 +31,7 @@ import net.runelite.client.ui.overlay.OverlayManager;
  */
 @Slf4j
 @PluginDescriptor(
-	name = "<html><!--making pretty labels since 2012--><p style=\"color: #00bfff\">Proximity Chat</p></html>"//,
-	//name = "Proximity Chat"
+	name = "Proximity Chat"
 )
 public class ProxChatClientPlugin extends Plugin
 {
@@ -196,7 +195,7 @@ public class ProxChatClientPlugin extends Plugin
 	}
 
 	/**
-	 * Event fired roughly every 600ms by the RuneScape client
+	 * Event fired roughly every 20ms by the RuneScape client
 	 *
 	 * @param event ignored
 	 */
