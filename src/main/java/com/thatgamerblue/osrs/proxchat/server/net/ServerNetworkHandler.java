@@ -2,6 +2,7 @@ package com.thatgamerblue.osrs.proxchat.server.net;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
+import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 import com.thatgamerblue.osrs.proxchat.common.net.NetworkHandler;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SAuth;
@@ -120,7 +121,7 @@ public class ServerNetworkHandler extends NetworkHandler
 	}
 
 	/**
-	 * Sends an object to a specific client over the network, synchronized on {@code this}
+	 * Sends an object to a specific client over the network
 	 *
 	 * @param connection where to send the object to
 	 * @param object     object to send
@@ -131,7 +132,7 @@ public class ServerNetworkHandler extends NetworkHandler
 	}
 
 	/**
-	 * Sends an object to everyone except one client over the network, synchronized on {@code this}
+	 * Sends an object to everyone except one client over the network
 	 *
 	 * @param connection where to not send the object to
 	 * @param object     object to send
@@ -165,7 +166,16 @@ public class ServerNetworkHandler extends NetworkHandler
 		int nonce = random.nextInt();
 		nonceMap.put(connection.getID(), nonce);
 		System.out.println("Received connection w/ id " + connection.getID() + ", sending back nonce " + nonce);
-		executor.schedule(() -> nonceMap.remove(connection.getID()), 30, TimeUnit.SECONDS);
+		executor.schedule(() ->
+		{
+			nonceMap.remove(connection.getID());
+
+			if (connection.isConnected() && !authenticatedClients.contains(connection.getID()))
+			{
+				connection.close();
+			}
+
+		}, 30, TimeUnit.SECONDS);
 		sendTCP(connection.getID(), new S2CAuthReq(nonce));
 	}
 
@@ -196,39 +206,43 @@ public class ServerNetworkHandler extends NetworkHandler
 
 			nonceMap.remove(connection.getID());
 
-			byte[] provided = ((C2SAuth) message).password;
-			if (provided == null)
+			// if password is not empty, do authorization
+			if (!Strings.isNullOrEmpty(password.get()))
 			{
-				connection.close();
-				return;
-			}
-			byte[] serverPw = password.get().getBytes(StandardCharsets.UTF_8);
+				byte[] provided = ((C2SAuth) message).password;
+				if (provided == null)
+				{
+					connection.close();
+					return;
+				}
+				byte[] serverPw = password.get().getBytes(StandardCharsets.UTF_8);
 
-			Random rand = new Random(nonce);
-			for (int i = 0; i < serverPw.length; i++)
-			{
-				serverPw[i] = (byte) (serverPw[i] ^ rand.nextInt());
-			}
+				Random rand = new Random(nonce);
+				for (int i = 0; i < serverPw.length; i++)
+				{
+					serverPw[i] = (byte) (serverPw[i] ^ rand.nextInt());
+				}
 
-			byte[] expected = Hashing.sha256().hashBytes(serverPw).asBytes();
+				byte[] expected = Hashing.sha256().hashBytes(serverPw).asBytes();
 
-			if (provided.length != expected.length)
-			{
-				connection.close();
-				return;
-			}
+				if (provided.length != expected.length)
+				{
+					connection.close();
+					return;
+				}
 
-			int result = 0;
-			for (int i = 0; i < expected.length; i++)
-			{
-				result |= provided[i] ^ expected[i];
-			}
+				int result = 0;
+				for (int i = 0; i < expected.length; i++)
+				{
+					result |= provided[i] ^ expected[i];
+				}
 
-			if (result != 0)
-			{
-				System.out.println("Closing connection with " + connection.getID() + " due to an invalid password");
-				connection.close();
-				return;
+				if (result != 0)
+				{
+					System.out.println("Closing connection with " + connection.getID() + " due to an invalid password");
+					connection.close();
+					return;
+				}
 			}
 
 			authenticatedClients.add(connection.getID());

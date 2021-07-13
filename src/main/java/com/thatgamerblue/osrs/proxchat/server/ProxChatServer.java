@@ -124,6 +124,8 @@ public class ProxChatServer
 
 		System.out.println("Writing config file...");
 
+		config.comment = ServerConfig.STATIC_COMMENT;
+
 		String configStr = GSON.toJson(config);
 		try
 		{
