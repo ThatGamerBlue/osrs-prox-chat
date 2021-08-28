@@ -110,8 +110,8 @@ dependencies {
 
     implementation("com.esotericsoftware.minlog:minlog:$minlogVersion")
 
-    compileOnly "org.projectlombok:lombok:1.18.4"
-    annotationProcessor "org.projectlombok:lombok:1.18.4"
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor "org.projectlombok:lombok:1.18.20"
 
     testImplementation "junit:junit:4.12"
 

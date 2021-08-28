@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.google.common.hash.Hashing;
 import com.thatgamerblue.osrs.proxchat.client.ProxChatClientPlugin;
 import com.thatgamerblue.osrs.proxchat.client.audio.SpeakerThread;
+import com.thatgamerblue.osrs.proxchat.common.audio.AudioConstants;
 import com.thatgamerblue.osrs.proxchat.common.net.NetworkHandler;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SAuth;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SMicPacket;
@@ -25,6 +26,7 @@ import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.Perspective;
 import net.runelite.api.coords.LocalPoint;
 
 /**
@@ -243,7 +245,7 @@ public class ClientNetworkHandler extends NetworkHandler
 		{
 			S2CMicPacket micPacket = (S2CMicPacket) message;
 
-			if (micPacket.distance < 0 || micPacket.distance > 1920)
+			if (micPacket.distance < 0 || micPacket.distance > AudioConstants.MAX_DISTANCE)
 			{
 				// drop the packet, something's gone wrong
 				return;
@@ -323,8 +325,8 @@ public class ClientNetworkHandler extends NetworkHandler
 			int lX = lp.getX();
 			int lY = lp.getY();
 
-			x = lX + (client.getBaseX() * 128);
-			y = lY + (client.getBaseY() * 128);
+			x = lX + (client.getBaseX() * Perspective.LOCAL_TILE_SIZE);
+			y = lY + (client.getBaseY() * Perspective.LOCAL_TILE_SIZE);
 			plane = client.getPlane();
 			world = client.getWorld();
 		}

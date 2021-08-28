@@ -14,6 +14,7 @@ import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.events.ClientTick;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
@@ -213,7 +214,7 @@ public class ProxChatClientPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (event.getGameState().getState() < 10)
+		if (event.getGameState().getState() < GameState.LOGIN_SCREEN.getState())
 		{
 			return;
 		}

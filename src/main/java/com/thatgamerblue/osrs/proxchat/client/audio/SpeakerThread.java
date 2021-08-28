@@ -123,7 +123,7 @@ public class SpeakerThread extends Thread
 			}
 
 			GameState gs = gameState.get();
-			if (gs.getState() > 30 || gs.getState() < 25)
+			if (gs.getState() > GameState.LOGGED_IN.getState() || gs.getState() < GameState.LOADING.getState())
 			{
 				continue;
 			}
@@ -161,8 +161,8 @@ public class SpeakerThread extends Thread
 	 */
 	private float scaleAudio(int distance)
 	{
-		float minDist = 5f * 128f;
-		float maxDist = 15f * 128f;
+		float minDist = (float) AudioConstants.MIN_DISTANCE;
+		float maxDist = (float) AudioConstants.MAX_DISTANCE;
 		float diff = maxDist - minDist;
 		float val = 1.0f - ((((distance - minDist) * 0.99f) / diff) + 0.01f);
 		return Math.max(0.0f, Math.min(val, 1.0f));

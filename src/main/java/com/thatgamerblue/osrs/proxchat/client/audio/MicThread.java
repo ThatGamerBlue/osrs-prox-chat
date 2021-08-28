@@ -20,6 +20,12 @@ import net.runelite.api.GameState;
 public class MicThread extends Thread
 {
 	/**
+	 * How long to hold the mic open for after releasing push to talk/voice activity stops
+	 * Helps prevent rapid enabling and disabling of the microphone causing an unpleasant experience
+	 */
+	private static final int MIC_HOLDON_TIME_DELAY = 120;
+
+	/**
 	 * Atomic used to tell when the thread should stop
 	 */
 	private final AtomicBoolean running = new AtomicBoolean(true);
@@ -48,7 +54,7 @@ public class MicThread extends Thread
 	 */
 	private final Supplier<AudioMode> audioModeSupplier;
 	/**
-	 * Game state supplier so we don't blast the server with nobody can hear
+	 * Game state supplier, we don't want to blast the server with sound nobody can hear
 	 */
 	private final Supplier<GameState> gameStateSupplier;
 	/**
@@ -151,7 +157,7 @@ public class MicThread extends Thread
 				case PUSH_TO_TALK:
 					if (pttDown.get())
 					{
-						micHoldOnTime = System.currentTimeMillis() + 120;
+						micHoldOnTime = System.currentTimeMillis() + MIC_HOLDON_TIME_DELAY;
 						networkHandler.sendTCP(new C2SMicPacket(inBuf));
 						continue;
 					}
@@ -160,7 +166,7 @@ public class MicThread extends Thread
 					double highestLvl = AudioUtil.calculateAudioLevel(inBuf);
 					if (highestLvl > thresholdSupplier.get())
 					{
-						micHoldOnTime = System.currentTimeMillis() + 120;
+						micHoldOnTime = System.currentTimeMillis() + MIC_HOLDON_TIME_DELAY;
 						networkHandler.sendTCP(new C2SMicPacket(inBuf));
 						continue;
 					}

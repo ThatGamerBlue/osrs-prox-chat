@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
+import com.thatgamerblue.osrs.proxchat.common.audio.AudioConstants;
 import com.thatgamerblue.osrs.proxchat.common.net.NetworkHandler;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SAuth;
 import com.thatgamerblue.osrs.proxchat.common.net.messages.c2s.C2SMicPacket;
@@ -35,11 +36,6 @@ import net.runelite.api.Perspective;
  */
 public class ServerNetworkHandler extends NetworkHandler
 {
-	/**
-	 * Maximum tile distance a player can be heard from
-	 */
-	private static final int MAX_DISTANCE = 15 * Perspective.LOCAL_TILE_SIZE;
-
 	/**
 	 * A secure random instance used for generating nonces
 	 */
@@ -306,7 +302,7 @@ public class ServerNetworkHandler extends NetworkHandler
 				}
 
 				int dist;
-				if ((dist = senderState.distanceTo(v)) > MAX_DISTANCE)
+				if ((dist = senderState.distanceTo(v)) > AudioConstants.MAX_DISTANCE)
 				{
 					continue;
 				}
