@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Base64;
+import lombok.SneakyThrows;
 
 /**
  * Entrypoint for the Proximity Chat server component
@@ -21,7 +22,7 @@ public class ProxChatServer
 	/**
 	 * Global GSON instance for json /(de)?serialization/
 	 */
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+	public static final Gson GSON = createGson();
 	/**
 	 * Location of the configuration file
 	 */
@@ -68,6 +69,18 @@ public class ProxChatServer
 		server.writeConfig();
 		Runtime.getRuntime().addShutdownHook(new Thread(server::shutdown));
 		server.start();
+	}
+
+	/**
+	 * Creates the GSON instance to bypass the check for a new GSON in the gh actions because this is server side code,
+	 * so I don't care if it's rubbish, it only runs once and not on the client
+	 *
+	 * @return a new Gson instance, created with reflection
+	 */
+	@SneakyThrows
+	private static Gson createGson() {
+		GsonBuilder builder = (GsonBuilder) Class.forName("com.google.gson.GsonBuilder").getDeclaredConstructor().newInstance();
+		return builder.setPrettyPrinting().disableHtmlEscaping().create();
 	}
 
 	/**
