@@ -62,6 +62,16 @@ public class ClientNetworkHandler extends NetworkHandler
 	private final Supplier<String> password;
 
 	/**
+	 * Holds if we should actually try to connect
+	 */
+	private final Supplier<Boolean> enabled;
+
+	/**
+	 * Holds the current room the player is speaking in
+	 */
+	private final Supplier<String> room;
+
+	/**
 	 * Holds all the SpeakerThread instances this handler controls
 	 */
 	private final ConcurrentHashMap<UUID, SpeakerThread> speakers = new ConcurrentHashMap<>();
@@ -133,7 +143,9 @@ public class ClientNetworkHandler extends NetworkHandler
 		Client client,
 		Supplier<String> connectionAddress,
 		Supplier<Integer> port,
-		Supplier<String> password
+		Supplier<String> password,
+		Supplier<Boolean> enabled,
+		Supplier<String> room
 	)
 	{
 		super(Mode.CLIENT);
@@ -142,6 +154,8 @@ public class ClientNetworkHandler extends NetworkHandler
 		this.connectionAddress = connectionAddress;
 		this.port = port;
 		this.password = password;
+		this.enabled = enabled;
+		this.room = room;
 	}
 
 	/**
@@ -151,11 +165,6 @@ public class ClientNetworkHandler extends NetworkHandler
 	@Override
 	public void connect()
 	{
-		if (connectionAddress.get().equals("<disabled>"))
-		{
-			return;
-		}
-
 		if (connecting.get())
 		{
 			return;
@@ -169,6 +178,12 @@ public class ClientNetworkHandler extends NetworkHandler
 
 	private void doConnect()
 	{
+		if (connectionAddress.get().equals("<disabled>") || !enabled.get())
+		{
+			connecting.set(false);
+			return;
+		}
+
 		try
 		{
 			netClient.start();
@@ -340,7 +355,7 @@ public class ClientNetworkHandler extends NetworkHandler
 			return;
 		}
 
-		C2SUpdatePacket packet = new C2SUpdatePacket(x, y, plane, world, gameState);
+		C2SUpdatePacket packet = new C2SUpdatePacket(x, y, plane, world, gameState, room.get());
 		if (packet.equals(lastState))
 		{
 			return;

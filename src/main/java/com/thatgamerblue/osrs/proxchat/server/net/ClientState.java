@@ -1,5 +1,6 @@
 package com.thatgamerblue.osrs.proxchat.server.net;
 
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Value;
 
@@ -40,6 +41,11 @@ public class ClientState
 	int gameState;
 
 	/**
+	 * Player chatroom
+	 */
+	String room;
+
+	/**
 	 * Gets the distance to another player. Basically just {@link net.runelite.api.coords.WorldPoint#distanceTo(net.runelite.api.coords.WorldPoint)} with a fancy wrapper
 	 *
 	 * @param other state of the other client
@@ -68,6 +74,11 @@ public class ClientState
 		}
 
 		if (this.x == -1 || other.x == -1)
+		{
+			return Integer.MAX_VALUE;
+		}
+
+		if (!Objects.equals(other.room, this.room))
 		{
 			return Integer.MAX_VALUE;
 		}

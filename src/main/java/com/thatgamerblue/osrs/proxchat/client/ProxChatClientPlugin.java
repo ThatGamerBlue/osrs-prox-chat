@@ -52,7 +52,7 @@ public class ProxChatClientPlugin extends Plugin
 	/**
 	 * Set of config keys that require disconnecting and reconnecting to the server
 	 */
-	private static final Set<String> RECONNECT_CONFIGS = ImmutableSet.of("address", "port", "password");
+	private static final Set<String> RECONNECT_CONFIGS = ImmutableSet.of("address", "port", "password", "enabled");
 
 	/**
 	 * Instance of the RuneScape game client
@@ -129,7 +129,7 @@ public class ProxChatClientPlugin extends Plugin
 	{
 		Log.set(Log.LEVEL_INFO);
 		executor = Executors.newSingleThreadScheduledExecutor();
-		network = new ClientNetworkHandler(this, client, config::address, config::port, config::password);
+		network = new ClientNetworkHandler(this, client, config::address, config::port, config::password, config::enabled, config::room);
 		network.initKryonet();
 
 		micThread = new MicThread(network, config::micVolume, config::activationThreshold, config::audioMode, client::getGameState);
@@ -180,7 +180,7 @@ public class ProxChatClientPlugin extends Plugin
 		{
 			executor.submit(() ->
 			{
-				if (!network.isConnected() && !network.isConnecting())
+				if (!event.getKey().equals("enabled") && !network.isConnected() && !network.isConnecting())
 				{
 					return;
 				}

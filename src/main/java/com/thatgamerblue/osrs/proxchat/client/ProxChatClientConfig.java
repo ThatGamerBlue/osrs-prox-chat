@@ -14,6 +14,23 @@ import net.runelite.client.config.Range;
 public interface ProxChatClientConfig extends Config
 {
 	/**
+	 * Config for if the plugin should connect to the server
+	 * We want this because even if the user turns on the plugin, we want them to look at the settings pane
+	 * to change servers if they don't want to connect to the default public server
+	 *
+	 * @return is the plugin enabled?
+	 */
+	@ConfigItem(
+		keyName = "enabled",
+		name = "Enabled",
+		description = "Enable the plugin",
+		position = 0
+	)
+	default boolean enabled() {
+		return false;
+	}
+
+	/**
 	 * Config for the address of the voice server
 	 *
 	 * @return network address of the voice server
@@ -21,12 +38,12 @@ public interface ProxChatClientConfig extends Config
 	@ConfigItem(
 		keyName = "address",
 		name = "Server Address",
-		description = "The voice server to use",
-		position = 0
+		description = "The voice server to use. Default: proxchat.thatgamerblue.com",
+		position = 1
 	)
 	default String address()
 	{
-		return "<disabled>";
+		return "proxchat.thatgamerblue.com";
 	}
 
 	/**
@@ -39,7 +56,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "port",
 		name = "Server Port",
 		description = "Port of the voice server",
-		position = 1
+		position = 2
 	)
 	default int port()
 	{
@@ -55,11 +72,26 @@ public interface ProxChatClientConfig extends Config
 		keyName = "password",
 		name = "Server Password",
 		description = "Password of the voice server",
-		position = 2,
+		position = 3,
 		secret = true
 	)
 	default String password()
 	{
+		return "";
+	}
+
+	/**
+	 * Config for the room the player is in
+	 *
+	 * @return shared room name
+	 */
+	@ConfigItem(
+		keyName = "room",
+		name = "Room Name",
+		description = "Shared room name for private calls - if this gets leaked anyone can join",
+		position = 4
+	)
+	default String room() {
 		return "";
 	}
 
@@ -72,7 +104,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "audioMode",
 		name = "Mic Mode",
 		description = "Voice detection type to use.",
-		position = 3
+		position = 5
 	)
 	default AudioMode audioMode()
 	{
@@ -89,7 +121,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "activationThreshold",
 		name = "Activation Threshold",
 		description = "Threshold for voice activation in dB. Range: -127 - 0",
-		position = 4
+		position = 6
 	)
 	default int activationThreshold()
 	{
@@ -105,7 +137,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "pushToTalk",
 		name = "PTT Key",
 		description = "Push To Talk Key",
-		position = 5
+		position = 7
 	)
 	default Keybind pushToTalk()
 	{
@@ -121,7 +153,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "toggleMute",
 		name = "Mute Mic",
 		description = "Push to mute mic",
-		position = 6
+		position = 8
 	)
 	default Keybind toggleMute()
 	{
@@ -138,7 +170,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "micVolume",
 		name = "Mic Volume",
 		description = "Range 0 - 100",
-		position = 7
+		position = 9
 	)
 	default int micVolume()
 	{
@@ -154,7 +186,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "toggleMuteSpeaker",
 		name = "Mute Speaker",
 		description = "Push to mute speakers",
-		position = 8
+		position = 10
 	)
 	default Keybind toggleMuteSpeaker()
 	{
@@ -171,7 +203,7 @@ public interface ProxChatClientConfig extends Config
 		keyName = "speakerVolume",
 		name = "Speaker Volume",
 		description = "Range 0 - 100",
-		position = 9
+		position = 11
 	)
 	default int speakerVolume()
 	{

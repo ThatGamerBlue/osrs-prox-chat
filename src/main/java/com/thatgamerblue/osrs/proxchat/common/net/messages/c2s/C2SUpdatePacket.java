@@ -37,6 +37,10 @@ public class C2SUpdatePacket
 	 * Client game state
 	 */
 	public int gameState;
+	/**
+	 * Shared room name
+	 */
+	public String room;
 
 	/**
 	 * Serializes a C2SUpdatePacket to binary
@@ -58,6 +62,7 @@ public class C2SUpdatePacket
 			output.writeInt(packet.plane);
 			output.writeInt(packet.world);
 			output.writeInt(packet.gameState);
+			output.writeString(packet.room);
 		}
 
 		/**
@@ -71,7 +76,7 @@ public class C2SUpdatePacket
 		@Override
 		public C2SUpdatePacket read(Kryo kryo, Input input, Class<C2SUpdatePacket> aClass)
 		{
-			return new C2SUpdatePacket(input.readInt(), input.readInt(), input.readInt(), input.readInt(), input.readInt());
+			return new C2SUpdatePacket(input.readInt(), input.readInt(), input.readInt(), input.readInt(), input.readInt(), input.readString());
 		}
 	}
 }

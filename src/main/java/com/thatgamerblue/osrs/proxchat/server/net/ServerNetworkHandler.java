@@ -272,7 +272,7 @@ public class ServerNetworkHandler extends NetworkHandler
 				uuid = UUID.randomUUID();
 			}
 
-			clientStates.put(connection.getID(), new ClientState(uuid, update.x, update.y, update.plane, update.world, update.gameState));
+			clientStates.put(connection.getID(), new ClientState(uuid, update.x, update.y, update.plane, update.world, update.gameState, update.room));
 		}
 		else if (message instanceof C2SMicPacket)
 		{
