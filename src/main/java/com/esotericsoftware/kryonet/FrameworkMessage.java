@@ -2,11 +2,9 @@
 package com.esotericsoftware.kryonet;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.minlog.Log;
-import java.io.IOException;
 
 /** Marker interface to denote that a message is used by the Ninja framework and is generally invisible to the developer. Eg, these
  * messages are only logged at the {@link Log#LEVEL_TRACE} level.

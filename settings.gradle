@@ -1,1 +1,10 @@
 rootProject.name = 'blues-prox-chat'
+include 'server'
+
+// if we are building for the plugin hub...
+if (gradle.startParameter.taskNames.contains("runelitePluginHubPackage") ||
+        gradle.startParameter.taskNames.contains("runelitePluginHubManifest")) {
+    // ...don't build the server
+    startParameter.excludedTaskNames.add(":server:runelitePluginHubPackage")
+    startParameter.excludedTaskNames.add(":server:runelitePluginHubManifest")
+}

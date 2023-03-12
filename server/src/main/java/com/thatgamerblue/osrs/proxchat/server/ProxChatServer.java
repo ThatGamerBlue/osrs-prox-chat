@@ -77,10 +77,10 @@ public class ProxChatServer
 	 *
 	 * @return a new Gson instance, created with reflection
 	 */
-	@SneakyThrows
 	private static Gson createGson() {
-		GsonBuilder builder = (GsonBuilder) Class.forName("com.google.gson.GsonBuilder").getDeclaredConstructor().newInstance();
-		return builder.setPrettyPrinting().disableHtmlEscaping().create();
+		//GsonBuilder builder = (GsonBuilder) Class.forName("com.google.gson.GsonBuilder").getDeclaredConstructor().newInstance();
+		//return builder.setPrettyPrinting().disableHtmlEscaping().create();
+		return new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
 	}
 
 	/**
